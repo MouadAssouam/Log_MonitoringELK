@@ -1,0 +1,86 @@
+# config.yaml
+
+elasticsearch:
+  hosts:
+    - "http://IPAddr:9200"  # Replace with your Elasticsearch host
+  http_auth:
+    user: "${ELASTIC_USER}"          # Replace with your Elasticsearch username via environment variable
+    password: "${ELASTIC_PASSWORD}"  # Replace with your Elasticsearch password via environment variable
+  indexes:                           # List of indices to read logs from
+    - "filebeat-*"                    # Example index pattern
+    - "winlogbeat-windows"            # Another index
+    - "auditbeat-*"                   # Additional index
+    # Add more indices as needed
+  alert_index: "high-severity-alerts"  # Index to send alerts
+  timeout: 30                           # Elasticsearch client timeout in seconds
+
+logging:
+  level: "DEBUG"                        # Logging level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(levelname)s - %(message)s"  # Log message format
+  datefmt: "%Y-%m-%d %H:%M:%S"          # Date format for logs
+
+alerting:
+  time_window: 5  # Time window in minutes for evaluating alerts
+
+  thresholds:
+    business_hours:
+      logon:
+        warning: 3    # Generate warning at every multiple of 3 attempts
+        high: 12      # High alert at 12 attempts
+      rdp:
+        warning: 3    # Generate warning at every multiple of 3 attempts
+        high: 12      # High alert at 12 attempts
+    non_business_hours:
+      logon:
+        high: 3       # High alert at 3 attempts
+        critical: 12  # Critical alert at 12 attempts
+      rdp:
+        high: 3       # High alert at 3 attempts
+        critical: 12  # Critical alert at 12 attempts
+      logon_success:
+        critical: 1   # Critical alert at 1 successful logon outside business hours
+
+business_hours:
+  start: "09:00"  # Business hours start time (24-hour format)
+  end: "18:00"    # Business hours end time (24-hour format)
+
+events:
+  logon_event_codes:
+    - "4624"  # Successful logon
+    - "4625"  # Failed logon
+  rdp_event_codes:
+    - "4624"  # Assuming RDP logon is also event 4624 with specific LogonType
+  windows_defender_events:
+    - "1116"
+    - "2001"
+    - "2004"
+
+sleep_interval: 60  # in seconds
+
+allowed_logon_types:
+  logon: [7, 10]
+
+smtp:
+  server: "smtp.gmail.com"
+  port: 587
+  username: "${SMTP_USERNAME}"       # Replace with your SMTP username via environment variable
+  password: "${SMTP_PASSWORD}"       # Replace with your SMTP password via environment variable
+  sender: "*****@gmail.com"
+  receivers:
+    - "********@outlook.com"
+  subjects:
+    sudo: "Security Alert: Unauthorized Sudo Usage"
+    ssh: "Security Alert: SSH Login Failure"
+    dos: "Security Alert: Potential DoS Attack Detected"
+
+alert_cooldowns:
+  ssh_warning: 180  # 3 minutes in seconds
+  ssh_high: 300      # 5 minutes in seconds
+  default: 300       # Default cooldown for other alerts
+
+dos_detection:
+  threshold: 100          # Number of requests from a single IP within the timeframe
+  timeframe_minutes: 5    # Timeframe in minutes to monitor requests
+
+monitoring:
+  duration_minutes: 5    # Default duration for monitoring
