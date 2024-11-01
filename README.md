@@ -1,6 +1,5 @@
 # Log Monitoring & Alerting System
 
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.6%2B-blue.svg)
 ![Elasticsearch](https://img.shields.io/badge/Elasticsearch-7.x%2B-brightgreen.svg)
 ![Status](https://img.shields.io/badge/status-Stable-success.svg)
