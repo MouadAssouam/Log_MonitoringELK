@@ -104,7 +104,7 @@ Update the `config.yaml` file in the project root directory with the following c
 The script supports two primary operations:
 
 1. **One-Time Scan**: Perform a single scan of logs within a specified timeframe.
-2. **Continuous Monitoring**: Continuously monitor logs for a defined duration.
+2. **Continuous Monitoring**: Continuously monitor logs until manually stopped.
 
 ### **1. One-Time Scan**
 
@@ -124,31 +124,71 @@ python log_monitoring.py scan --duration 10
 python log_monitoring.py scan --duration 15
 ```
 
-This command scans logs from the last 15 minutes.
+This command scans logs from the last **15 minutes**.
 
 ### **2. Continuous Monitoring**
 
-Start continuous monitoring of logs for a specified duration. The script will periodically query Elasticsearch based on the `sleep_interval` defined in `config.yaml`.
+Start continuous monitoring of logs. The script will run indefinitely, periodically querying Elasticsearch based on the `sleep_interval` defined in `config.yaml`.
 
 ```bash
-python log_monitoring.py monitor --duration 60
+python log_monitoring.py monitor
 ```
 
 **Parameters:**
 
-- `--duration`: (Optional) Duration in minutes for monitoring. Default is `5` minutes.
+- **None**: The `monitor` command no longer accepts a `--duration` parameter and will run indefinitely.
 
 **Example:**
 
 ```bash
-python log_monitoring.py monitor --duration 120
+python log_monitoring.py monitor
 ```
 
-This command continuously monitors logs for 2 hours.
+This command **continuously monitors** logs until you decide to stop it.
 
 **Graceful Shutdown:**
 
-To stop continuous monitoring before the specified duration, press `Ctrl+C`. The script will handle the termination signal and shut down gracefully.
+To stop continuous monitoring before manually stopping it, press `Ctrl+C`. The script will handle the termination signal and shut down gracefully.
+
+**Example:**
+
+```bash
+python log_monitoring.py monitor
+```
+
+To stop, press `Ctrl+C`:
+
+```
+^C
+INFO:LogMonitor:Shutdown signal received. Exiting gracefully...
+INFO:LogMonitor:Log monitoring service stopped.
+```
+
+## Command-Line Arguments
+
+The script utilizes the `argparse` module to handle command-line arguments, supporting the following subcommands:
+
+- `scan`: Perform a one-time scan of logs.
+- `monitor`: Start continuous monitoring of logs.
+
+### **Scan Command**
+
+```bash
+python log_monitoring.py scan --duration <minutes>
+```
+
+- **Description**: Scans logs from the last `<minutes>` minutes.
+- **Arguments**:
+  - `--duration`: (Optional) Duration in minutes for scanning logs. Default is `5` minutes.
+
+### **Monitor Command**
+
+```bash
+python log_monitoring.py monitor
+```
+
+- **Description**: Starts continuous monitoring of logs. Runs indefinitely until stopped manually.
+- **Arguments**: None.
 
 ## Security Considerations
 
